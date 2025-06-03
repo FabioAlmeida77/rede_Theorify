@@ -2,13 +2,15 @@ import express from 'express';
 import Criarteoria from '../models/criarteoria.js';
 import User from '../models/usuario.js';
 import { authenticateToken } from '../middleware/auth.js';
+import upload from '../middleware/multer.js';
 
 const router = express.Router();
 
 
-router.get('/teorias', async (req, res) => {
+router.get('/teorias', authenticateToken, async (req, res) => {
   try {
     const teorias = await Criarteoria.findAll({
+      where: { userId: req.user.id }, // ← pega só do usuário logado
       include: {
         model: User,
         attributes: ['id', 'email', 'name_tag']
@@ -40,9 +42,16 @@ router.get('/teorias/:id', async (req, res) => {
   }
 });
 
-router.post('/teorias/cad', authenticateToken, async (req, res) => {
-  const { nome_card, foto, video } = req.body;
+router.post('/teorias/cad', authenticateToken, upload.fields([
+  { name: 'foto', maxCount: 1 },
+  { name: 'video', maxCount: 1 }
+]), async (req, res) => {
+  const { nome_card } = req.body;
   const userId = req.user.id;
+
+  // Pega os caminhos dos arquivos
+  const foto = req.files['foto'] ? req.files['foto'][0].path : null;
+  const video = req.files['video'] ? req.files['video'][0].path : null;
 
   try {
     const teoria = await Criarteoria.create({ nome_card, foto, video, userId });
