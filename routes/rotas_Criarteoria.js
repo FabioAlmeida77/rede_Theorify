@@ -10,7 +10,8 @@ const router = express.Router();
 router.get('/teorias', authenticateToken, async (req, res) => {
   try {
     const teorias = await Criarteoria.findAll({
-      where: { userId: req.user.id }, // ← pega só do usuário logado
+      where: { userId: req.user.id }, // ← só do usuário logado
+      attributes: ['id', 'nome_card', 'foto', 'video', 'x', 'y', 'createdAt', 'updatedAt'],
       include: {
         model: User,
         attributes: ['id', 'email', 'name_tag']
@@ -46,15 +47,14 @@ router.post('/teorias/cad', authenticateToken, upload.fields([
   { name: 'foto', maxCount: 1 },
   { name: 'video', maxCount: 1 }
 ]), async (req, res) => {
-  const { nome_card } = req.body;
+  const { nome_card, x = 0, y = 0 } = req.body;
   const userId = req.user.id;
 
-  // Pega os caminhos dos arquivos
   const foto = req.files['foto'] ? req.files['foto'][0].path : null;
   const video = req.files['video'] ? req.files['video'][0].path : null;
 
   try {
-    const teoria = await Criarteoria.create({ nome_card, foto, video, userId });
+    const teoria = await Criarteoria.create({ nome_card, foto, video, x, y, userId });
     res.status(201).json(teoria);
   } catch (error) {
     console.error("Erro ao criar teoria:", error);
@@ -64,7 +64,7 @@ router.post('/teorias/cad', authenticateToken, upload.fields([
 
 router.put('/teorias/edit/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const { nome_card, foto, video } = req.body;
+  const { nome_card, foto, video, x, y } = req.body;
   const userId = req.user.id;
 
   try {
@@ -75,15 +75,18 @@ router.put('/teorias/edit/:id', authenticateToken, async (req, res) => {
       return res.status(403).json({ mensagem: "Acesso negado: você não é o autor dessa teoria" });
     }
 
-    teoria.nome_card = nome_card;
-    teoria.foto = foto;
-    teoria.video = video;
+    teoria.nome_card = nome_card !== undefined ? nome_card : teoria.nome_card;
+    teoria.foto = foto !== undefined ? foto : teoria.foto;
+    teoria.video = video !== undefined ? video : teoria.video;
+    teoria.x = x !== undefined ? x : teoria.x;
+    teoria.y = y !== undefined ? y : teoria.y;
+
     await teoria.save();
 
     res.json(teoria);
   } catch (error) {
     console.error("Erro ao editar teoria:", error);
-    res.status(500).json({ mensagem: "Erro ao editar teoria" });
+    res.status(500).json({ mensagem: "Erro ao editar teoria", erro: error.message });
   }
 });
 
@@ -100,10 +103,13 @@ router.delete('/teorias/delete/:id', authenticateToken, async (req, res) => {
     }
 
     await teoria.destroy();
-    res.status(200).json({ mensagem: "Teoria deletada com sucesso" });
+    res.status(200).json({ 
+      mensagem: "Teoria deletada com sucesso",
+      idDeletado: id
+    });
   } catch (error) {
     console.error("Erro ao deletar teoria:", error);
-    res.status(500).json({ mensagem: "Erro ao deletar teoria" });
+    res.status(500).json({ mensagem: "Erro ao deletar teoria", erro: error.message });
   }
 });
 

@@ -14,6 +14,16 @@ const Criarteoria = sequelize.define('Criarteoria',{
   video: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  x: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
+  y: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0
   }
 }, {
   timestamps: true
