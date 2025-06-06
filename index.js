@@ -4,6 +4,7 @@ import cors from 'cors';
 import routerUser from './routes/Tusuario.js';
 import comentarioRoutes from './routes/rotas_comentario.js';
 import teoriaRoutes from './routes/rotas_Criarteoria.js';
+import linesRoutes from './routes/lines.js'
 
 import sequelize from './config/db.js';
 import User from './models/usuario.js';
@@ -26,6 +27,7 @@ app.use(session({
 app.use(comentarioRoutes);
 app.use(routerUser);
 app.use(teoriaRoutes);
+app.use(linesRoutes);
 
 sequelize.sync({ alter: true })
   .then(() => {
