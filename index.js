@@ -1,6 +1,7 @@
 import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
+import path from 'path';
 import routerUser from './routes/Tusuario.js';
 import comentarioRoutes from './routes/rotas_comentario.js';
 import teoriaRoutes from './routes/rotas_Criarteoria.js';
@@ -28,6 +29,7 @@ app.use(comentarioRoutes);
 app.use(routerUser);
 app.use(teoriaRoutes);
 app.use(linesRoutes);
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 sequelize.sync({ alter: true })
   .then(() => {

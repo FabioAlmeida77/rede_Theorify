@@ -102,6 +102,8 @@ router.delete('/teorias/delete/:id', authenticateToken, async (req, res) => {
       return res.status(403).json({ mensagem: "Acesso negado: você não é o autor dessa teoria" });
     }
 
+    
+
     await teoria.destroy();
     res.status(200).json({ 
       mensagem: "Teoria deletada com sucesso",
