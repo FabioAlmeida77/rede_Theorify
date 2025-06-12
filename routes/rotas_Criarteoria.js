@@ -14,7 +14,7 @@ router.get('/teorias/board/:id', authenticateToken, async (req, res) => {
 
     const teorias = await Criarteoria.findAll({
       where: {
-        userId: req.user.id,
+        
         boardId: boardId  // 👈 agora sim, boardId corretamente usado
       },
       attributes: ['id', 'nome_card', 'foto', 'video', 'x', 'y', 'createdAt', 'updatedAt'],
