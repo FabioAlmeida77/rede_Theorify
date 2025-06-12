@@ -22,16 +22,20 @@ router.get('/lines', authenticateToken, async (req, res) => {
 
 // Salvar (substituir) linhas do usuário
 router.post('/lines/save', authenticateToken, async (req, res) => {
-  const { lines } = req.body; // Ex: [{ startCardId, endCardId }]
+  const { lines, boardId } = req.body; // Agora espera o boardId no corpo da requisição
   const userId = req.user.id;
+
+  if (!boardId) {
+    return res.status(400).json({ mensagem: 'boardId é obrigatório para salvar as linhas' });
+  }
 
   try {
     console.log('📤 [DEBUG] Substituindo linhas para userId:', userId, 'com:', lines);
 
-    await Line.destroy({ where: { userId } });
+    await Line.destroy({ where: { userId, boardId } });
 
     const createdLines = await Promise.all(
-      lines.map(line => Line.create({ ...line, userId }))
+      lines.map(line => Line.create({ ...line, userId, boardId }))
     );
 
     console.log('✅ Linhas salvas:', createdLines);
@@ -41,5 +45,6 @@ router.post('/lines/save', authenticateToken, async (req, res) => {
     res.status(500).json({ mensagem: 'Erro ao salvar linhas', erro: error.message });
   }
 });
+
 
 export default router;

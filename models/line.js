@@ -2,6 +2,7 @@ import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 import User from "./usuario.js";
 import Criarteoria from "./criarteoria.js";
+import Board from "./board.js";
 
 const Line = sequelize.define('Line', {
     startCardId: {
@@ -37,6 +38,18 @@ const Line = sequelize.define('Line', {
     
     User.hasMany(Line, {
       foreignKey: 'userId'
+});
+
+Line.belongsTo(Board, {
+  foreignKey: {
+    name: 'boardId',
+    allowNull: false
+  },
+  onDelete: 'CASCADE'
+});
+
+Board.hasMany(Line, {
+  foreignKey: 'boardId'
 });
 
 export default Line

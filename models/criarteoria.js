@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 import User from "./usuario.js";
+import Board from "./board.js";
 
 const Criarteoria = sequelize.define('Criarteoria',{
     nome_card:{ 
@@ -25,10 +26,20 @@ const Criarteoria = sequelize.define('Criarteoria',{
     allowNull: false,
     defaultValue: 0
   },
+
   
+  
+ boardId: { // ← ADICIONE ESTE BLOCO
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'boards', // ou 'boards' dependendo de como sua tabela está no banco
+      key: 'id'
+    }
+  }
 }, {
   timestamps: true
-})
+});
 
 Criarteoria.belongsTo(User, {
   foreignKey: {
@@ -41,5 +52,13 @@ Criarteoria.belongsTo(User, {
 User.hasMany(Criarteoria, {
   foreignKey: 'userId'
 });
+
+Criarteoria.belongsTo(Board, { foreignKey: 'boardId', onDelete: 'CASCADE' });
+
+Board.hasMany(Criarteoria, {
+  foreignKey: 'boardId'
+});
+
+
 
 export default Criarteoria

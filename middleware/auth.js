@@ -1,6 +1,7 @@
+// auth.js (ou onde está seu middleware de autenticação)
 import jwt from 'jsonwebtoken';
 
-const secret = 'autenticandoMeulogin';
+export const JWT_SECRET = process.env.JWT_SECRET || 'autenticandoMeulogin';
 
 export const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -10,7 +11,7 @@ export const authenticateToken = (req, res, next) => {
     return res.status(401).json({ mensagem: 'Token não fornecido.' });
   }
 
-  jwt.verify(token, secret, (err, user) => {
+  jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) return res.status(403).json({ mensagem: 'Token inválido.' });
     req.user = user;
     next();
