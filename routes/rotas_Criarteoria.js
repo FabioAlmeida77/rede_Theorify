@@ -56,8 +56,6 @@ router.post('/teorias/cad', authenticateToken, upload.fields([
   { name: 'video', maxCount: 1 }
 ]), async (req, res) => {
   const userId = req.user.id;
-
-  // ⚠️ Conversão e validação
   const boardId = parseInt(req.body.boardId, 10);
   const { nome_card, x = 0, y = 0 } = req.body;
 
@@ -65,16 +63,20 @@ router.post('/teorias/cad', authenticateToken, upload.fields([
     return res.status(400).json({ mensagem: "boardId é obrigatório e deve ser um número válido" });
   }
 
-  // 📌 Verifica se o board existe
-  const board = await Board.findByPk(boardId);
-  if (!board) {
-    return res.status(404).json({ mensagem: "Board não encontrado" });
-  }
-
-  const foto = req.files['foto'] ? req.files['foto'][0].path : null;
-  const video = req.files['video'] ? req.files['video'][0].path : null;
-
   try {
+    // 📌 Verifica se o board existe e se pertence ao usuário
+    const board = await Board.findByPk(boardId);
+    if (!board) {
+      return res.status(404).json({ mensagem: "Board não encontrado" });
+    }
+
+    if (board.userId !== userId) {
+      return res.status(403).json({ mensagem: "Você não tem permissão para criar cards neste board" });
+    }
+
+    const foto = req.files['foto'] ? req.files['foto'][0].path : null;
+    const video = req.files['video'] ? req.files['video'][0].path : null;
+
     const teoria = await Criarteoria.create({
       nome_card,
       foto,
@@ -91,6 +93,7 @@ router.post('/teorias/cad', authenticateToken, upload.fields([
     res.status(500).json({ mensagem: "Erro ao criar teoria", erro: error.message });
   }
 });
+
 
 
 
