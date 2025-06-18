@@ -78,9 +78,6 @@ router.post('/comentario/cad', authenticateToken, async (req, res) => {
       return res.status(404).json({ mensagem: "Board não encontrado" });
     }
 
-    if (board.userId !== userId) {
-      return res.status(403).json({ mensagem: "Você não tem permissão para criar cards neste board" });
-    }
     if (!user) {
       return res.status(400).json({ mensagem: "Usuário não encontrado" });
     }
