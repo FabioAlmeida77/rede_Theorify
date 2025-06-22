@@ -110,7 +110,15 @@ router.post('/login', async (req, res) => {
 
     const token = jwt.sign({ id: user.id, email: user.email }, secret, { expiresIn: '2h' });
 
-    res.json({ mensagem: 'Login bem-sucedido', token });
+    res.json({
+      mensagem: 'Login bem-sucedido',
+      token,
+      user: {
+        id: user.id,
+        name_tag: user.name_tag,
+        email: user.email
+      }
+    });
   } catch (error) {
     console.error('Erro no login:', error);
     res.status(500).json({ mensagem: 'Erro ao tentar logar.' });
