@@ -6,6 +6,16 @@ const Board = sequelize.define('Board', {
   title: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+
+  categoria: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+
+  descricao: {
+    type: DataTypes.STRING,
+    allowNull: false
   }
 }, {
   timestamps: true

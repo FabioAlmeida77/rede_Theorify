@@ -36,14 +36,14 @@ export const getAllBoards = async (req, res) => {
 export const createBoard = async (req, res) => {
   try {
     const userId = getUserIdFromToken(req);
-    const { title } = req.body;
+    const { title, categoria, descricao } = req.body;
 
     console.log("Token userId:", userId);
     console.log("Título recebido:", title);
 
     if (!title) return res.status(400).json({ message: 'Título é obrigatório' });
 
-    const board = await Board.create({ title, userId });
+    const board = await Board.create({ title, categoria, descricao, userId });
 
     console.log("Board criado com sucesso:", board);
 
