@@ -1,7 +1,10 @@
 import Board from '../models/board.js';
 import User from '../models/usuario.js';
+import Criarteoria from '../models/criarteoria.js';
+import Line from '../models/line.js';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../middleware/auth.js';
+
 
 const getUserIdFromToken = (req) => {
   const token = req.headers.authorization?.split(' ')[1];
@@ -32,14 +35,49 @@ export const getAllBoards = async (req, res) => {
   }
 };
 
+export const deleteBoard = async (req, res)=>{
+  const {id} = req.params
+  try {
+    const board = await Board.findByPk(id)
+    console.log(board)
+    await Line.destroy({ where: { boardId: id } })
+    await Criarteoria.destroy({ where: { boardId: id } })
+    await board.destroy()
+    console.log("Board deletado com sucesso!")
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message:'Erro no servidor!'})
+  }
+}
+
+export const editarBoard = async (req, res)=>{
+  const {id} = req.params
+  const { descricao,title, categoria } = req.body
+  try {
+    const board = await Board.findByPk(id)
+
+    board.descricao=descricao
+    board.title=title
+    board.categoria=categoria
+
+    await board.save()
+    console.log(board)
+    res.status(200)
+    console.log("board editado com sucesso!")
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message:'Erro no servidor!'})
+  }
+}
+
 // POST /boards/create
 export const createBoard = async (req, res) => {
   try {
-    const userId = getUserIdFromToken(req);
+    const userId = getUserIdFromToken(req)
     const { title, categoria, descricao } = req.body;
 
-    console.log("Token userId:", userId);
-    console.log("Título recebido:", title);
+    console.log("Token userId:", userId)
+    console.log("Título recebido:", title)
 
     if (!title) return res.status(400).json({ message: 'Título é obrigatório' });
 

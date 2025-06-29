@@ -3,12 +3,12 @@ import sequelize from "../config/db.js";
 import User from "./usuario.js";
 import Board from "./board.js";
 
-const Criarteoria = sequelize.define('Criarteoria',{
-    nome_card:{ 
-    type:DataTypes.STRING,
-    allowNull:false
+const Criarteoria = sequelize.define('Criarteoria', {
+  nome_card: { 
+    type: DataTypes.STRING,
+    allowNull: false
   }, 
-    foto: {
+  foto: {
     type: DataTypes.STRING,
     allowNull: true
   },
@@ -26,14 +26,11 @@ const Criarteoria = sequelize.define('Criarteoria',{
     allowNull: false,
     defaultValue: 0
   },
-
-  
-  
- boardId: { // ← ADICIONE ESTE BLOCO
+  boardId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'boards', // ou 'boards' dependendo de como sua tabela está no banco
+      model: Board,
       key: 'id'
     }
   }
@@ -41,6 +38,7 @@ const Criarteoria = sequelize.define('Criarteoria',{
   timestamps: true
 });
 
+// Relação com User
 Criarteoria.belongsTo(User, {
   foreignKey: {
     name: 'userId',
@@ -53,12 +51,14 @@ User.hasMany(Criarteoria, {
   foreignKey: 'userId'
 });
 
-Criarteoria.belongsTo(Board, { foreignKey: 'boardId', onDelete: 'CASCADE' });
+// Relação com Board
+Criarteoria.belongsTo(Board, { 
+  foreignKey: 'boardId', 
+  onDelete: 'CASCADE' 
+});
 
 Board.hasMany(Criarteoria, {
   foreignKey: 'boardId'
 });
 
-
-
-export default Criarteoria
+export default Criarteoria;

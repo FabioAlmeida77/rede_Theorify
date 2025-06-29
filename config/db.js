@@ -3,8 +3,8 @@ const sequelize = new Sequelize({
     dialect:'sqlite',
     storage:'../theorify.db'
 })
-sequelize.authenticate()
-        .then(()=> console.log("Conexão estabelecida com sucesso."))
-        .catch(err=> console.log("Não foi possivel conectar ao banco", err))
+sequelize.authenticate().then(() => {
+  return sequelize.query("PRAGMA foreign_keys = ON");
+});
 
 export default sequelize

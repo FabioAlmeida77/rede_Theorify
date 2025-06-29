@@ -5,41 +5,40 @@ import Criarteoria from "./criarteoria.js";
 import Board from "./board.js";
 
 const Line = sequelize.define('Line', {
-    startCardId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: Criarteoria,
-          key: 'id'
-        },
-        onDelete: 'CASCADE'
-      },
-      endCardId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: Criarteoria,
-          key: 'id'
-        },
-        onDelete: 'CASCADE'
-      },
-    }, {
-      timestamps: true
-    });
-    
-    // Para relacionar a linha ao usuário (autor das conexões)
-    Line.belongsTo(User, {
-      foreignKey: {
-        name: 'userId',
-        allowNull: false
-      },
-      onDelete: 'CASCADE'
-    });
-    
-    User.hasMany(Line, {
-      foreignKey: 'userId'
+  startCardId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Criarteoria,
+      key: 'id'
+    }
+  },
+  endCardId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: Criarteoria,
+      key: 'id'
+    }
+  }
+}, {
+  timestamps: true
 });
 
+// Relacionamento com User
+Line.belongsTo(User, {
+  foreignKey: {
+    name: 'userId',
+    allowNull: false
+  },
+  onDelete: 'CASCADE'
+});
+
+User.hasMany(Line, {
+  foreignKey: 'userId'
+});
+
+// Relacionamento com Board
 Line.belongsTo(Board, {
   foreignKey: {
     name: 'boardId',
@@ -52,4 +51,15 @@ Board.hasMany(Line, {
   foreignKey: 'boardId'
 });
 
-export default Line
+// Relacionamentos com Criarteoria
+Line.belongsTo(Criarteoria, {
+  foreignKey: 'startCardId',
+  onDelete: 'CASCADE'
+});
+
+Line.belongsTo(Criarteoria, {
+  foreignKey: 'endCardId',
+  onDelete: 'CASCADE'
+});
+
+export default Line;
