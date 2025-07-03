@@ -35,40 +35,54 @@ export const getAllBoards = async (req, res) => {
   }
 };
 
-export const deleteBoard = async (req, res)=>{
-  const {id} = req.params
+export const deleteBoard = async (req, res) => {
+  const { id } = req.params;
+
   try {
-    const board = await Board.findByPk(id)
-    console.log(board)
-    await Line.destroy({ where: { boardId: id } })
-    await Criarteoria.destroy({ where: { boardId: id } })
-    await board.destroy()
-    console.log("Board deletado com sucesso!")
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({message:'Erro no servidor!'})
-  }
-}
+    const board = await Board.findByPk(id);
 
-export const editarBoard = async (req, res)=>{
-  const {id} = req.params
-  const { descricao,title, categoria } = req.body
+    if (!board) {
+      return res.status(404).json({ message: 'Board não encontrado.' });
+    }
+
+    // Apaga linhas e teorias relacionadas
+    await Line.destroy({ where: { boardId: id } });
+    await Criarteoria.destroy({ where: { boardId: id } });
+
+    // Apaga o próprio board
+    await board.destroy();
+
+    console.log("Board deletado com sucesso!");
+    return res.status(200).json({ message: 'Board deletado com sucesso.' });
+
+  } catch (error) {
+    console.error("Erro ao deletar board:", error);
+    return res.status(500).json({ message: 'Erro no servidor!' });
+  }
+};
+
+export const editarBoard = async (req, res) => {
+  const { id } = req.params;
+  const { descricao, title, categoria } = req.body;
+
   try {
-    const board = await Board.findByPk(id)
+    const board = await Board.findByPk(id);
+    if (!board) {
+      return res.status(404).json({ message: 'Board não encontrado' });
+    }
 
-    board.descricao=descricao
-    board.title=title
-    board.categoria=categoria
+    board.descricao = descricao;
+    board.title = title;
+    board.categoria = categoria;
 
-    await board.save()
-    console.log(board)
-    res.status(200)
-    console.log("board editado com sucesso!")
+    await board.save();
+
+    res.status(200).json({ message: 'Board editado com sucesso!', board });
   } catch (error) {
-    console.log(error)
-    res.status(500).json({message:'Erro no servidor!'})
+    console.error(error);
+    res.status(500).json({ message: 'Erro no servidor!' });
   }
-}
+};
 
 // POST /boards/create
 export const createBoard = async (req, res) => {
