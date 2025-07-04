@@ -10,7 +10,7 @@ router.use(authenticateToken);                  //GET /boards/all
 router.post('/create', createBoard);       // POST /boards/create
 router.get('/', getBoardsByUser);          // GET /boards
 router.get('/:id', getBoardById);          // GET /boards/:id
-router.delete('/delete/:id', deleteBoard)
+router.delete('/delete/:id', authenticateToken, deleteBoard)
 router.put('/edit/:id', authenticateToken, editarBoard);
 
 export default router;
